@@ -20,8 +20,8 @@ function showNumAnimation(i,j,num) {
 
     //设定动画效果
     numCell.animate({
-        width:'100px',
-        height:'100px',
+        width:cellSideLength,
+        height:cellSideLength,
         top:getPosTop(i,j),
         left:getPosLeft(i,j)
     },50);

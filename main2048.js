@@ -5,9 +5,34 @@ var board;  //保存每个格子分数
 var hasConflicted;  //是否发生过碰撞
 var score = 0;
 
+var startx,starty,endx,endy;    //保存触控坐标
+
 $(document).ready(function(){
+   prepareForMobile();
    newGame();
 });
+
+/**
+ * 应用移动端的长度方案
+ */
+function prepareForMobile(){
+    //当屏幕宽度大于500时应用绝对的长度
+    if(documentWidth > 500){
+        gridContainerWidth = 500;
+        cellSideLength = 100;
+        cellSpace = 20;
+    }
+    $('#grid-container').css({
+        width: gridContainerWidth - 2*cellSpace,
+        height: gridContainerWidth - 2*cellSpace,
+        padding: cellSpace
+    }).css('border-radius',0.02*cellSideLength);
+
+    $('.grid-cell').css({
+        width:cellSideLength,
+        height:cellSideLength
+    }).css('border-radius',0.02*cellSideLength);
+}
 
 function newGame(){
    //初始化棋盘格
@@ -63,14 +88,14 @@ function updateBoardView(){
                 thisCell.css({
                     width:'0px',
                     height:'0px',
-                    top:getPosTop(i,j)+50,
-                    left:getPosLeft(i,j)+50
+                    top:getPosTop(i,j)+0.5*cellSideLength,
+                    left:getPosLeft(i,j)+0.5*cellSideLength
                 });
             }
             else{
                 thisCell.css({
-                    width:'100px',
-                    height:'100px',
+                    width:cellSideLength,
+                    height:cellSideLength,
                     top:getPosTop(i,j),
                     left:getPosLeft(i,j),
                     backgroundColor:getNumberBgColor(board[i][j]),
@@ -82,6 +107,9 @@ function updateBoardView(){
     }
     //刷新分数
     updateScore(score);
+    //给新生成的number格子应用移动端长度
+    $('.number-cell').css('line-height',cellSideLength+'px')
+        .css('font-size',0.6*cellSideLength+'px');
 }
 
 /**
@@ -133,6 +161,8 @@ function generateOneNumber(){
 $(document).keydown(function(event){
     switch (event.keyCode){
         case 37:    //left
+            //阻止默认操作
+            event.preventDefault();
             if(moveLeft()){
                 //move动画结束后生成格子
                 setTimeout(function(){
@@ -145,6 +175,8 @@ $(document).keydown(function(event){
             }
             break;
         case 38:    //up
+            //阻止默认操作
+            event.preventDefault();
             if(moveUp()){
                 setTimeout(function(){
                     generateOneNumber();
@@ -155,6 +187,8 @@ $(document).keydown(function(event){
             }
             break;
         case 39:    //right
+            //阻止默认操作
+            event.preventDefault();
             if(moveRight()){
                 setTimeout(function(){
                     generateOneNumber();
@@ -165,6 +199,8 @@ $(document).keydown(function(event){
             }
             break;
         case 40:    //down
+            //阻止默认操作
+            event.preventDefault();
             if(moveDown()){
                 setTimeout(function(){
                     generateOneNumber();
@@ -177,6 +213,82 @@ $(document).keydown(function(event){
         default :
             break;
     }
+});
+
+//监听触控事件
+addEventListener('touchstart',function(event){
+    //touches保存了触控信息，此处使用单点触控，所以取数组第一项
+    startx = event.touches[0].pageX;
+    starty = event.touches[0].pageY;
+});
+addEventListener('touchmove',function(event){
+    //取消默认事件
+    event.preventDefault();
+});
+addEventListener('touchend',function(event){
+    //changedTouches保存了touch改变时的坐标位置
+    endx = event.changedTouches[0].pageX;
+    endy = event.changedTouches[0].pageY;
+
+    //x,y向量
+    var deltax = endx - startx,
+        deltay = endy - starty;
+
+    //防误触操作
+    if(Math.abs(deltax) < 0.05*documentWidth && Math.abs(deltay) < 0.05*documentWidth) return;
+
+    //触控方向判断
+    if(Math.abs(deltax) - Math.abs(deltay) > 0){
+        //x
+        if(deltax > 0){
+            //right
+            if(moveRight()){
+                setTimeout(function(){
+                    generateOneNumber();
+                },210);
+                setTimeout(function(){
+                    isGameover();
+                },300);
+            }
+        }else{
+            //left
+            if(moveLeft()){
+                //move动画结束后生成格子
+                setTimeout(function(){
+                    generateOneNumber();
+                },210);
+                //格子生成后检测isGameover
+                setTimeout(function(){
+                    isGameover();
+                },300);
+            }
+        }
+    }else{
+        //y
+        if(deltay > 0 ){
+            //down
+            if(moveDown()){
+                setTimeout(function(){
+                    generateOneNumber();
+                },210);
+                setTimeout(function(){
+                    isGameover();
+                },300);
+            }
+
+        }else{
+            //up
+            if(moveUp()){
+                setTimeout(function(){
+                    generateOneNumber();
+                },210);
+                setTimeout(function(){
+                    isGameover();
+                },300);
+            }
+        }
+    }
+
 });
 /**
  * 向左移动
