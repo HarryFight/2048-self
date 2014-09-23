@@ -1,17 +1,12 @@
 /**
  * Created by Administrator on 2014/8/11.
  */
-//按照百分比计算每一部分的长度
-var documentWidth = window.screen.availWidth,
-    gridContainerWidth = 0.92 * documentWidth,
-    cellSideLength = 0.18 * documentWidth,
-    cellSpace = 0.04 * documentWidth;
 
 function getPosTop(i,j){
-    return cellSpace + (cellSpace+cellSideLength)*i ;
+    return 1.2 + (1.2+6)*i +'rem';
 }
 function getPosLeft(i,j){
-    return cellSpace + (cellSpace+cellSideLength)*j ;
+    return 1.2 + (1.2+6)*j +'rem';
 }
 
 function getNumberCellStr(i,j){

@@ -8,31 +8,9 @@ var score = 0;
 var startx,starty,endx,endy;    //保存触控坐标
 
 $(document).ready(function(){
-   prepareForMobile();
+   // prepareForMobile();
    newGame();
 });
-
-/**
- * 应用移动端的长度方案
- */
-function prepareForMobile(){
-    //当屏幕宽度大于500时应用绝对的长度
-    if(documentWidth > 500){
-        gridContainerWidth = 500;
-        cellSideLength = 100;
-        cellSpace = 20;
-    }
-    $('#grid-container').css({
-        width: gridContainerWidth - 2*cellSpace,
-        height: gridContainerWidth - 2*cellSpace,
-        padding: cellSpace
-    }).css('border-radius',0.02*cellSideLength);
-
-    $('.grid-cell').css({
-        width:cellSideLength,
-        height:cellSideLength
-    }).css('border-radius',0.02*cellSideLength);
-}
 
 function newGame(){
    //初始化棋盘格
@@ -88,14 +66,14 @@ function updateBoardView(){
                 thisCell.css({
                     width:'0px',
                     height:'0px',
-                    top:getPosTop(i,j)+0.5*cellSideLength,
-                    left:getPosLeft(i,j)+0.5*cellSideLength
+                    top:getPosTop(i,j),
+                    left:getPosLeft(i,j)
                 });
             }
             else{
                 thisCell.css({
-                    width:cellSideLength,
-                    height:cellSideLength,
+                    width:"6rem",
+                    height:"6rem",
                     top:getPosTop(i,j),
                     left:getPosLeft(i,j),
                     backgroundColor:getNumberBgColor(board[i][j]),
@@ -108,8 +86,8 @@ function updateBoardView(){
     //刷新分数
     updateScore(score);
     //给新生成的number格子应用移动端长度
-    $('.number-cell').css('line-height',cellSideLength+'px')
-        .css('font-size',0.6*cellSideLength+'px');
+    $('.number-cell').css('line-height','6rem')
+        .css('font-size','3.6rem');
 }
 
 /**
@@ -235,7 +213,7 @@ addEventListener('touchend',function(event){
         deltay = endy - starty;
 
     //防误触操作
-    if(Math.abs(deltax) < 0.05*documentWidth && Math.abs(deltay) < 0.05*documentWidth) return;
+    if(Math.abs(deltax) < 30 && Math.abs(deltay) < 30) return;
 
     //触控方向判断
     if(Math.abs(deltax) - Math.abs(deltay) > 0){
